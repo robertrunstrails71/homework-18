@@ -1,24 +1,25 @@
+const express = require("express");
 const mongoose = require("mongoose");
 
-const Schema = mongoose.Schema;
+const PORT = process.env.PORT || 3000;
 
-// Creating new collection with name, value and date
-const transactionSchema = new Schema({
-  name: {
-    type: String,
-    trim: true,
-    required: "Enter a name for transaction"
-  },
-  value: {
-    type: Number,
-    required: "Enter an amount"
-  },
-  date: {
-    type: Date,
-    default: Date.now
+const app = express();
+
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+app.use(express.static("public"));
+mongoose.connect(
+  process.env.MONGODB_URI || "mongodb://localhost/mongoheadlines",
+  {
+    useNewUrlParser: true,
+    useFindAndModify: false
   }
+);
+
+// Routes
+app.use(require("./routes/api.js"));
+
+app.listen(PORT, () => {
+  console.log(`App running on port ${PORT}!`);
 });
-
-const Transaction = mongoose.model("Transaction", transactionSchema);
-
-module.exports = Transaction;
